@@ -11,7 +11,7 @@ PiggyBank:
     No-Loaded-Piggies: "&cThere are no loaded piggy banks!"
     Pig-Type: "&6&lPiggyBanks >> &cPlease select valid pig type: adult/baby"
     Help-Command:
-      Header: "&8&m=&a&m+&8&m========[&r &6&lPiggyBanks plugin& 8&m]=&8&m=======&a&m+="
+      Header: "&8&m=&a&m+&8&m========[&r &6&lPiggyBanks plugin &8&m]=&8&m=======&a&m+&8&m="
       Description: " &a/piggybanks create &6- Create piggy bank at your location (admin command)\n
          &a/piggybanks remove &6- Remove target piggy bank (admin command)"
   Pig:
