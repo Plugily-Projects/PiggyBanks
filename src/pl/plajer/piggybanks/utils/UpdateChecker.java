@@ -19,7 +19,7 @@ public class UpdateChecker {
 
     public static void checkUpdate(String currentVersion) {
         //TODO change plugin version check
-        String version = getVersion(0);
+        String version = getVersion(52634);
         if(checkHigher(currentVersion, version))
             latestVersion = version;
     }
