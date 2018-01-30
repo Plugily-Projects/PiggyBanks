@@ -1,0 +1,36 @@
+PiggyBank:
+  Money-Withdrawn: "&6&lPiggyBanks >> &aWithdrawn %coins% coin(s)!"
+  Money-Deposited: "&6&lPiggyBanks >> &cDeposited %coins% coin(s)!"
+  Money-Not-Enough-Money-In-Piggy: "&6&lPiggyBanks >> &cYou don't have that much money to withdraw!"
+  Money-No-Money-In-Piggy: "&6&lPiggyBanks >> &cYou don't have more money in piggy bank!"
+  Money-No-Money-Balance: "&6&lPiggyBanks >> &cYou don't have more money to deposit!"
+  Command:
+    Only-Player: "&cThis command can be used only as player!"
+    No-Permission: "&6&lPiggyBanks >> &cYou don't have permission to use this command!"
+    Loaded-Piggies: "&6&lPiggyBanks >> &aLoaded piggy banks:"
+    No-Loaded-Piggies: "&cThere are no loaded piggy banks!"
+    Pig-Type: "&6&lPiggyBanks >> &cPlease select valid pig type: adult/baby"
+    Help-Command:
+      Header: "&8&m=&a&m+&8&m========[&r &6&lPiggyBanks plugin& 8&m]=&8&m=======&a&m+="
+      Description: " &a/piggybanks create &6- Create piggy bank at your location (admin command)\n
+         &a/piggybanks remove &6- Remove target piggy bank (admin command)"
+  Pig:
+    No-Permission: "&6&lPiggyBanks >> &cYou don't have permission to deposit money in piggy banks!"
+    Name: "&6&lPiggy Bank"
+    Name-With-Counter: "&6&lPiggy Bank &e(%money%)"
+    Name-Description: "&7Click to withdraw 1 coin, punch to deposit money;&7Shift + click to deposit 10 coins"
+    Created-Successfully: "&6&lPiggyBanks >> &aPiggy bank created successfully!"
+    Removed: "&6&lPiggyBanks >> &cPiggy bank removed successfully!"
+    Target-Invalid: "&6&lPiggyBanks >> &cTarget entity is not a pig or isn't a piggy bank!"
+  Menu:
+    Title: "&lPiggy bank withdraw menu"
+    Balance-Icon: "&6You've got &e%coins% coins"
+    Withdraw-Format: "&aWithdraw &e%coins% coins"
+    Withdraw-Lore: "&7Click here to withdraw &e%coins% coins&7!"
+    Error-Occurred: "&6&lPiggyBanks >> &cAn error occurred! Please try again!"
+
+Other:
+    Plugin-Up-To-Date: "&e[PiggyBanks] There is plugin update! Your version: %old%, new version: %new%"
+    Plugin-Update-Check-Failed: "&c[PiggyBanks] Failed to check for update!"
+
+File-Version-Do-Not-Edit: 0

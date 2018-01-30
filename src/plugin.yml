@@ -1,0 +1,23 @@
+name: PiggyBanks
+version: 1.0.0
+author: Plajer
+main: pl.plajer.piggybanks.Main
+depend: [Vault, HolographicDisplays]
+loadbefore: [Vault, HolographicDisplays]
+
+commands:
+  piggybanks:
+    aliases: [pgb]
+    description: Command for piggy bank plugin.
+    usage: "Correct usage: /<command> create/remove/list"
+
+permissions:
+  piggybanks.*:
+    description: Gives you all permissions for PiggyBanks plugin.
+    children:
+      piggybanks.admin.*: true
+      piggybanks.use: true
+  piggybanks.admin.*:
+    description: Gives you all permissions for admin commands.
+    children:
+      piggybanks.admin.create: true
