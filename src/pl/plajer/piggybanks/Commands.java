@@ -133,6 +133,10 @@ public class Commands implements CommandExecutor {
                 }
             }
             if(args[0].equalsIgnoreCase("list")) {
+                if(!(sender.hasPermission("piggybanks.admin.list"))) {
+                    sender.sendMessage(Utils.colorRawMessage("PiggyBank.Command.No-Permission"));
+                    return true;
+                }
                 sender.sendMessage(Utils.colorRawMessage("PiggyBank.Command.Loaded-Piggies"));
                 int i = 0;
                 for(PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {

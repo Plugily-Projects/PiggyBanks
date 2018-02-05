@@ -13,7 +13,8 @@ PiggyBank:
     Help-Command:
       Header: "&8&m=&a&m+&8&m========[&r &6&lPiggyBanks plugin &8&m]=&8&m=======&a&m+&8&m="
       Description: " &a/piggybanks create &6- Create piggy bank at your location (admin command)\n
-         &a/piggybanks remove &6- Remove target piggy bank (admin command)"
+         &a/piggybanks remove &6- Remove target piggy bank (admin command)\n
+         &a/piggybanks list &6- Prints list of all piggy banks (admin command)"
   Pig:
     No-Permission: "&6&lPiggyBanks >> &cYou don't have permission to deposit money in piggy banks!"
     Name: "&6&lPiggy Bank"

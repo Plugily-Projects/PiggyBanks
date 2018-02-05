@@ -1,5 +1,5 @@
 name: PiggyBanks
-version: 1.0.0
+version: 1.0.1
 author: Plajer
 main: pl.plajer.piggybanks.Main
 depend: [Vault, HolographicDisplays]
@@ -21,3 +21,5 @@ permissions:
     description: Gives you all permissions for admin commands.
     children:
       piggybanks.admin.create: true
+      piggybanks.admin.remove: true
+      piggybanks.admin.list: true
