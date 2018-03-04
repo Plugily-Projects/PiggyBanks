@@ -25,6 +25,8 @@ PiggyBank:
     Target-Invalid: "&6&lPiggyBanks >> &cTarget entity is not a pig or isn't a piggy bank!"
   Menu:
     Title: "&lPiggy bank withdraw menu"
+    Enderchest-Name: "&5Open enderchest"
+    Enderchest-Lore: "&7Click to open."
     Balance-Icon: "&6You've got &e%coins% coins"
     Withdraw-Format: "&aWithdraw &e%coins% coins"
     Withdraw-Lore: "&7Click here to withdraw &e%coins% coins&7!"
@@ -34,4 +36,4 @@ Other:
     Plugin-Up-To-Date: "&e[PiggyBanks] There is plugin update! Your version: %old%, new version: %new%"
     Plugin-Update-Check-Failed: "&c[PiggyBanks] Failed to check for update!"
 
-File-Version-Do-Not-Edit: 0
+File-Version-Do-Not-Edit: 1

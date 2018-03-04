@@ -4,8 +4,6 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import org.bukkit.Location;
 import org.bukkit.entity.Pig;
 
-import java.util.UUID;
-
 public class PiggyBank {
 
     private Pig piggyBankEntity;

@@ -1,7 +1,7 @@
 package pl.plajer.piggybanks;
 
-import java.util.List;
-
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.VisibilityManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,11 +12,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
-
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.scheduler.BukkitRunnable;
 import pl.plajer.piggybanks.utils.Utils;
+
+import java.util.List;
 
 public class Commands implements CommandExecutor {
 
@@ -44,11 +43,11 @@ public class Commands implements CommandExecutor {
                     sender.sendMessage(Utils.colorRawMessage("PiggyBank.Command.No-Permission"));
                     return true;
                 }
-                if(args.length == 1){
+                if(args.length == 1) {
                     sender.sendMessage(Utils.colorRawMessage("PiggyBank.Command.Pig-Type"));
                     return true;
                 }
-                if(!(args[1].equalsIgnoreCase("adult") || args[1].equalsIgnoreCase("baby"))){
+                if(!(args[1].equalsIgnoreCase("adult") || args[1].equalsIgnoreCase("baby"))) {
                     sender.sendMessage(Utils.colorRawMessage("PiggyBank.Command.Pig-Type"));
                     return true;
                 }
@@ -56,20 +55,19 @@ public class Commands implements CommandExecutor {
                 Pig pig = (Pig) p.getWorld().spawnEntity(p.getLocation(), EntityType.PIG);
                 pig.setAI(false);
                 pig.setCollidable(false);
-                if(args[1].equalsIgnoreCase("adult")){
+                if(args[1].equalsIgnoreCase("adult")) {
                     pig.setAdult();
-                } else{
+                } else {
                     pig.setBaby();
                 }
                 pig.setAgeLock(true);
-                pig.setInvulnerable(true);
                 List<String> list = plugin.getFileManager().getPiggyBanksConfig().getStringList("piggybanks");
                 list.add(pig.getUniqueId().toString());
                 plugin.getFileManager().getPiggyBanksConfig().set("piggybanks", list);
                 plugin.getFileManager().savePiggyBanksConfig();
                 Hologram hologram = HologramsAPI.createHologram(plugin, pig.getLocation().clone().add(0, 2.2, 0));
                 if(plugin.getProtocolLibUse()) {
-                    new BukkitRunnable(){
+                    new BukkitRunnable() {
                         @Override
                         public void run() {
                             if(hologram.isDeleted()) this.cancel();
@@ -85,7 +83,7 @@ public class Commands implements CommandExecutor {
                     }.runTaskTimer(Main.getInstance(), 10, 10);
                 }
                 hologram.appendTextLine(Utils.colorRawMessage("PiggyBank.Pig.Name"));
-                for(String s : Utils.colorRawMessage("PiggyBank.Pig.Name-Description").split(";")){
+                for(String s : Utils.colorRawMessage("PiggyBank.Pig.Name-Description").split(";")) {
                     hologram.appendTextLine(s);
                 }
                 sender.sendMessage(Utils.colorRawMessage("PiggyBank.Pig.Created-Successfully"));

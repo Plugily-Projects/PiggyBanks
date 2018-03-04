@@ -1,20 +1,19 @@
 package pl.plajer.piggybanks;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.VisibilityManager;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Pig;
-
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import pl.plajer.piggybanks.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class PiggyManager {
 

@@ -1,9 +1,5 @@
 package pl.plajer.piggybanks;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -13,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -23,11 +20,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import pl.plajer.piggybanks.utils.UpdateChecker;
 import pl.plajer.piggybanks.utils.Utils;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 public class PiggyListeners implements Listener {
 
+    public static final List<Integer> PIGGY_VALUES = Arrays.asList(1, 5, 10, 25, 50, 100, -1);
     private Main plugin;
     private HashMap<Player, Pig> openedPiggies = new HashMap<>();
-    public static final List<Integer> PIGGY_VALUES = Arrays.asList(1, 5, 10, 25, 50, 100, -1);
 
     public PiggyListeners(Main plugin) {
         this.plugin = plugin;
@@ -39,8 +41,19 @@ public class PiggyListeners implements Listener {
     }
 
     @EventHandler
+    public void onPiggyBankDamage(EntityDamageEvent e) {
+        if(e.getEntity() instanceof Pig) {
+            for(PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
+                if(pgb.getPiggyBankEntity().equals(e.getEntity())) {
+                    e.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onPiggyBankDamage(EntityDamageByEntityEvent e) {
-        if(e.getEntity().getType().equals(EntityType.PIG) && e.getDamager().getType().equals(EntityType.PLAYER)) {
+        if(e.getEntity() instanceof Pig && e.getDamager() instanceof Player) {
             Player attacker = (Player) e.getDamager();
             Pig piggy = (Pig) e.getEntity();
             for(PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
@@ -52,6 +65,15 @@ public class PiggyListeners implements Listener {
                     }
                     openedPiggies.put(attacker, piggy);
                     Inventory piggyBank = Bukkit.createInventory(null, 3 * 9, Utils.colorRawMessage("PiggyBank.Menu.Title"));
+                    if(plugin.getConfig().getBoolean("enderchest-enabled")) {
+                        piggyBank = Bukkit.createInventory(null, 5 * 9, Utils.colorRawMessage("PiggyBank.Menu.Title"));
+                        ItemStack ender = new ItemStack(Material.ENDER_CHEST, 1);
+                        ItemMeta enderMeta = ender.getItemMeta();
+                        enderMeta.setDisplayName(Utils.colorRawMessage("PiggyBank.Menu.Enderchest-Name"));
+                        enderMeta.setLore(Collections.singletonList(Utils.colorRawMessage("PiggyBank.Menu.Enderchest-Lore")));
+                        ender.setItemMeta(enderMeta);
+                        piggyBank.setItem(31, ender);
+                    }
                     ItemStack balance = new ItemStack(Material.BOOK, 1);
                     ItemMeta balanceMeta = balance.getItemMeta();
                     balanceMeta.setDisplayName(Utils.colorRawMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(plugin.getFileManager().getUsersConfig().get("users." + e.getDamager().getUniqueId()))).replaceAll("null", "0"));
@@ -68,7 +90,7 @@ public class PiggyListeners implements Listener {
                         }
                         ItemMeta itemMeta = itemStack.getItemMeta();
                         itemMeta.setDisplayName(Utils.colorRawMessage("PiggyBank.Menu.Withdraw-Format").replaceAll("%coins%", String.valueOf(PIGGY_VALUES.get(i)).replaceAll("-1", "all")));
-                        itemMeta.setLore(Arrays.asList(Utils.colorRawMessage("PiggyBank.Menu.Withdraw-Lore").replaceAll("%coins%", String.valueOf(PIGGY_VALUES.get(i)).replaceAll("-1", "all"))));
+                        itemMeta.setLore(Collections.singletonList(Utils.colorRawMessage("PiggyBank.Menu.Withdraw-Lore").replaceAll("%coins%", String.valueOf(PIGGY_VALUES.get(i)).replaceAll("-1", "all"))));
                         itemStack.setItemMeta(itemMeta);
                         piggyBank.setItem(i + 10, itemStack);
                     }
@@ -77,6 +99,7 @@ public class PiggyListeners implements Listener {
                 }
             }
         }
+        Bukkit.broadcastMessage("3");
     }
 
     @SuppressWarnings("deprecation")
@@ -88,7 +111,7 @@ public class PiggyListeners implements Listener {
             for(PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
                 if(pgb.getPiggyBankEntity().equals(e.getRightClicked())) {
                     Integer money = 1;
-                    if(e.getPlayer().isSneaking()){
+                    if(e.getPlayer().isSneaking()) {
                         money = 10;
                     }
                     if(plugin.getEconomy().getBalance(e.getPlayer()) >= money) {
@@ -111,7 +134,7 @@ public class PiggyListeners implements Listener {
             plugin.getFileManager().getUsersConfig().set("users." + e.getPlayer().getUniqueId(), 0);
             plugin.getFileManager().saveUsersConfig();
         }
-        if(e.getPlayer().hasPermission("piggybabnks.admin.notify")){
+        if(e.getPlayer().hasPermission("piggybabnks.admin.notify")) {
             String currentVersion = "v" + Bukkit.getPluginManager().getPlugin("PiggyBanks").getDescription().getVersion();
             if(plugin.getConfig().getBoolean("update-notify")) {
                 try {

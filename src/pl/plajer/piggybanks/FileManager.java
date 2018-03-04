@@ -1,13 +1,13 @@
 package pl.plajer.piggybanks;
 
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.logging.Level;
-
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class FileManager {
 
@@ -191,7 +191,8 @@ public class FileManager {
             }
             try {
                 c.save(new File(plugin.getDataFolder(), file));
-            } catch(IOException ignored) {}
+            } catch(IOException ignored) {
+            }
         }
     }
 
@@ -200,7 +201,8 @@ public class FileManager {
         YamlConfiguration config = new YamlConfiguration();
         try {
             config.loadFromString(stringFromInputStream(Main.class.getResourceAsStream("/" + file)));
-        } catch(InvalidConfigurationException ignored) {}
+        } catch(InvalidConfigurationException ignored) {
+        }
         for(String key : config.getKeys(false)) {
             var.put(key, config.get(key));
         }

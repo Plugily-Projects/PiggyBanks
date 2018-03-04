@@ -5,6 +5,7 @@ import org.bukkit.Effect;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Pig;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -46,6 +47,10 @@ public class MenuHandler implements Listener {
             Pig piggyBank = plugin.getPiggyListeners().getOpenedPiggies().get(e.getWhoClicked());
             for(PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
                 if(pgb.getPiggyBankEntity().equals(piggyBank)) {
+                    if(e.getCurrentItem().getType().equals(Material.ENDER_CHEST)){
+                        e.getWhoClicked().openInventory(e.getWhoClicked().getEnderChest());
+                        return;
+                    }
                     if(plugin.getFileManager().getUsersConfig().getInt("users." + e.getWhoClicked().getUniqueId()) > 0) {
                         String clickedItem = e.getCurrentItem().getItemMeta().getDisplayName();
                         Integer number = null;

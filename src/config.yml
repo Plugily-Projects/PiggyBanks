@@ -1,4 +1,7 @@
 #Should we check for plugin updates?
 update-notify: true
 
-File-Version-Do-Not-Edit: 0
+#Enable per player enderchest in piggy banks?
+enderchest-enabled: true
+
+File-Version-Do-Not-Edit: 1

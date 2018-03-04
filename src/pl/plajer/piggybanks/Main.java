@@ -1,26 +1,28 @@
 package pl.plajer.piggybanks;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import net.milkbowl.vault.economy.Economy;
 import pl.plajer.piggybanks.utils.MetricsLite;
 import pl.plajer.piggybanks.utils.UpdateChecker;
 import pl.plajer.piggybanks.utils.Utils;
 
 public class Main extends JavaPlugin {
 
+    private static Main instance;
+    private final int MESSAGES_FILE_VERSION = 0;
+    private final int CONFIG_FILE_VERSION = 1;
     private FileManager fileManager;
     private PiggyListeners piggyListeners;
     private PiggyManager piggyManager;
-
-    private static Main instance;
     private Economy econ = null;
     private Boolean useProtocolLib;
-    private final int MESSAGES_FILE_VERSION = 0;
-    private final int CONFIG_FILE_VERSION = 0;
+
+    public static Main getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -87,7 +89,6 @@ public class Main extends JavaPlugin {
         }
     }
 
-
     @Override
     public void onDisable() {
         for(PiggyBank pgb : piggyManager.getLoadedPiggyBanks()) {
@@ -106,10 +107,6 @@ public class Main extends JavaPlugin {
 
     public PiggyManager getPiggyManager() {
         return piggyManager;
-    }
-
-    public static Main getInstance() {
-        return instance;
     }
 
     public Economy getEconomy() {
