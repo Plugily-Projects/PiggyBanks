@@ -1,5 +1,5 @@
 name: PiggyBanks
-version: 1.0.2
+version: 1.0.2.1
 author: Plajer
 main: pl.plajer.piggybanks.Main
 depend: [Vault, HolographicDisplays]

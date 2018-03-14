@@ -99,7 +99,6 @@ public class PiggyListeners implements Listener {
                 }
             }
         }
-        Bukkit.broadcastMessage("3");
     }
 
     @SuppressWarnings("deprecation")
