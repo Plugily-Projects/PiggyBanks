@@ -3,6 +3,8 @@ package pl.plajer.piggybanks;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import com.gmail.filoghost.holographicdisplays.api.VisibilityManager;
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -17,6 +19,8 @@ import java.util.UUID;
 
 public class PiggyManager {
 
+    @Getter
+    @Setter
     private List<PiggyBank> loadedPiggyBanks = new ArrayList<>();
     private Main plugin;
 
@@ -34,13 +38,12 @@ public class PiggyManager {
             }
         }
         if(uuids.isEmpty()) return;
-        int i = 0;
         for(World world : Bukkit.getServer().getWorlds()) {
             for(Entity entity : Bukkit.getServer().getWorld(world.getName()).getEntities()) {
                 if(entity instanceof Pig) {
                     if(uuids.contains(entity.getUniqueId())) {
-                        final Hologram hologram = HologramsAPI.createHologram(Main.getInstance(), entity.getLocation().clone().add(0, 2.2, 0));
-                        if(plugin.getProtocolLibUse()) {
+                        final Hologram hologram = HologramsAPI.createHologram(plugin, entity.getLocation().clone().add(0, 2.2, 0));
+                        if(plugin.isEnabled("ProtocolLib")) {
                             new BukkitRunnable(){
                                 @Override
                                 public void run() {
@@ -50,17 +53,16 @@ public class PiggyManager {
                                         vm.showTo(player);
                                         vm.setVisibleByDefault(false);
                                         hologram.removeLine(0);
-                                        hologram.insertTextLine(0, Utils.colorRawMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", plugin.getFileManager().getUsersConfig().get("users." + player.getUniqueId()).toString()));
+                                        hologram.insertTextLine(0, Utils.colorFileMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", plugin.getFileManager().getUsersConfig().get("users." + player.getUniqueId()).toString()));
                                     }
                                 }
-                            }.runTaskTimer(Main.getInstance(), 10, 10);
+                            }.runTaskTimer(plugin, 10, 10);
                         }
-                        hologram.appendTextLine(Utils.colorRawMessage("PiggyBank.Pig.Name"));
-                        for(String s : Utils.colorRawMessage("PiggyBank.Pig.Name-Description").split(";")){
+                        hologram.appendTextLine(Utils.colorFileMessage("PiggyBank.Pig.Name"));
+                        for(String s : Utils.colorFileMessage("PiggyBank.Pig.Name-Description").split(";")){
                             hologram.appendTextLine(s);
                         }
                         loadedPiggyBanks.add(new PiggyBank((Pig) entity, entity.getLocation(), hologram));
-                        i++;
                     }
                 }
             }
@@ -68,18 +70,10 @@ public class PiggyManager {
     }
 
     public void teleportScheduler() {
-        Bukkit.getScheduler().runTaskTimer(Main.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             for(PiggyBank pgb : loadedPiggyBanks) {
                 pgb.getPiggyBankEntity().teleport(pgb.getPigLocation());
             }
         }, 20 * 3, 20 * 3);
-    }
-
-    public List<PiggyBank> getLoadedPiggyBanks() {
-        return loadedPiggyBanks;
-    }
-
-    public void setLoadedPiggyBanks(List<PiggyBank> loadedPiggyBanks) {
-        this.loadedPiggyBanks = loadedPiggyBanks;
     }
 }

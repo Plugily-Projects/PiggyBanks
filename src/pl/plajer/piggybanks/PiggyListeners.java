@@ -1,5 +1,6 @@
 package pl.plajer.piggybanks;
 
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
@@ -27,18 +28,16 @@ import java.util.List;
 
 public class PiggyListeners implements Listener {
 
-    public static final List<Integer> PIGGY_VALUES = Arrays.asList(1, 5, 10, 25, 50, 100, -1);
+    private List<Integer> piggyValues = Arrays.asList(1, 5, 10, 25, 50, 100, -1);
     private Main plugin;
+    @Getter
     private HashMap<Player, Pig> openedPiggies = new HashMap<>();
 
-    public PiggyListeners(Main plugin) {
+    PiggyListeners(Main plugin) {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
-    public HashMap<Player, Pig> getOpenedPiggies() {
-        return openedPiggies;
-    }
 
     @EventHandler
     public void onPiggyBankDamage(EntityDamageEvent e) {
@@ -60,23 +59,23 @@ public class PiggyListeners implements Listener {
                 if(pgb.getPiggyBankEntity().equals(piggy)) {
                     e.setCancelled(true);
                     if(!e.getDamager().hasPermission("piggybanks.use")) {
-                        e.getDamager().sendMessage(Utils.colorRawMessage("PiggyBank.Pig.No-Permission"));
+                        e.getDamager().sendMessage(Utils.colorFileMessage("PiggyBank.Pig.No-Permission"));
                         return;
                     }
                     openedPiggies.put(attacker, piggy);
-                    Inventory piggyBank = Bukkit.createInventory(null, 3 * 9, Utils.colorRawMessage("PiggyBank.Menu.Title"));
+                    Inventory piggyBank = Bukkit.createInventory(null, 3 * 9, Utils.colorFileMessage("PiggyBank.Menu.Title"));
                     if(plugin.getConfig().getBoolean("enderchest-enabled")) {
-                        piggyBank = Bukkit.createInventory(null, 5 * 9, Utils.colorRawMessage("PiggyBank.Menu.Title"));
+                        piggyBank = Bukkit.createInventory(null, 5 * 9, Utils.colorFileMessage("PiggyBank.Menu.Title"));
                         ItemStack ender = new ItemStack(Material.ENDER_CHEST, 1);
                         ItemMeta enderMeta = ender.getItemMeta();
-                        enderMeta.setDisplayName(Utils.colorRawMessage("PiggyBank.Menu.Enderchest-Name"));
-                        enderMeta.setLore(Collections.singletonList(Utils.colorRawMessage("PiggyBank.Menu.Enderchest-Lore")));
+                        enderMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Enderchest-Name"));
+                        enderMeta.setLore(Collections.singletonList(Utils.colorFileMessage("PiggyBank.Menu.Enderchest-Lore")));
                         ender.setItemMeta(enderMeta);
                         piggyBank.setItem(31, ender);
                     }
                     ItemStack balance = new ItemStack(Material.BOOK, 1);
                     ItemMeta balanceMeta = balance.getItemMeta();
-                    balanceMeta.setDisplayName(Utils.colorRawMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(plugin.getFileManager().getUsersConfig().get("users." + e.getDamager().getUniqueId()))).replaceAll("null", "0"));
+                    balanceMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(plugin.getFileManager().getUsersConfig().get("users." + e.getDamager().getUniqueId()))).replaceAll("null", "0"));
                     balance.setItemMeta(balanceMeta);
                     piggyBank.setItem(4, balance);
                     for(int i = 0; i < 7; i++) {
@@ -89,8 +88,8 @@ public class PiggyListeners implements Listener {
                             itemStack = new ItemStack(Material.GOLD_BLOCK, 1);
                         }
                         ItemMeta itemMeta = itemStack.getItemMeta();
-                        itemMeta.setDisplayName(Utils.colorRawMessage("PiggyBank.Menu.Withdraw-Format").replaceAll("%coins%", String.valueOf(PIGGY_VALUES.get(i)).replaceAll("-1", "all")));
-                        itemMeta.setLore(Collections.singletonList(Utils.colorRawMessage("PiggyBank.Menu.Withdraw-Lore").replaceAll("%coins%", String.valueOf(PIGGY_VALUES.get(i)).replaceAll("-1", "all"))));
+                        itemMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Withdraw-Format").replaceAll("%coins%", String.valueOf(piggyValues.get(i)).replaceAll("-1", "all")));
+                        itemMeta.setLore(Collections.singletonList(Utils.colorFileMessage("PiggyBank.Menu.Withdraw-Lore").replaceAll("%coins%", String.valueOf(piggyValues.get(i)).replaceAll("-1", "all"))));
                         itemStack.setItemMeta(itemMeta);
                         piggyBank.setItem(i + 10, itemStack);
                     }
@@ -118,9 +117,9 @@ public class PiggyListeners implements Listener {
                         e.getRightClicked().getWorld().playEffect(e.getRightClicked().getLocation(), Effect.LAVA_POP, 1);
                         plugin.getFileManager().getUsersConfig().set("users." + e.getPlayer().getUniqueId(), plugin.getFileManager().getUsersConfig().getInt("users." + e.getPlayer().getUniqueId()) + money);
                         plugin.getFileManager().saveUsersConfig();
-                        e.getPlayer().sendMessage(Utils.colorRawMessage("PiggyBank.Money-Deposited").replaceAll("%coins%", String.valueOf(money)));
+                        e.getPlayer().sendMessage(Utils.colorFileMessage("PiggyBank.Money-Deposited").replaceAll("%coins%", String.valueOf(money)));
                     } else {
-                        e.getPlayer().sendMessage(Utils.colorRawMessage("PiggyBank.Money-No-Money-Balance"));
+                        e.getPlayer().sendMessage(Utils.colorFileMessage("PiggyBank.Money-No-Money-Balance"));
                     }
                 }
             }
@@ -141,10 +140,10 @@ public class PiggyListeners implements Listener {
                     String latestVersion = UpdateChecker.getLatestVersion();
                     if(latestVersion != null) {
                         latestVersion = "v" + latestVersion;
-                        e.getPlayer().sendMessage(Utils.colorRawMessage("Other.Plugin-Up-To-Date").replaceAll("%old%", currentVersion).replaceAll("%new%", latestVersion));
+                        e.getPlayer().sendMessage(Utils.colorFileMessage("Other.Plugin-Up-To-Date").replaceAll("%old%", currentVersion).replaceAll("%new%", latestVersion));
                     }
                 } catch(Exception ex) {
-                    Bukkit.getConsoleSender().sendMessage(Utils.colorRawMessage("Other.Plugin-Update-Check-Failed"));
+                    Bukkit.getConsoleSender().sendMessage(Utils.colorFileMessage("Other.Plugin-Update-Check-Failed"));
                 }
             }
         }
@@ -152,9 +151,7 @@ public class PiggyListeners implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
-        if(openedPiggies.containsKey(e.getPlayer())) {
-            openedPiggies.remove(e.getPlayer());
-        }
+        openedPiggies.remove(e.getPlayer());
     }
 
 }

@@ -1,30 +1,17 @@
 package pl.plajer.piggybanks;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Pig;
 
+@Getter
+@AllArgsConstructor
 public class PiggyBank {
 
     private Pig piggyBankEntity;
-    private Hologram piggyHologram;
     private Location pigLocation;
+    private Hologram piggyHologram;
 
-    public PiggyBank(Pig piggyBankEntity, Location pigLocation, Hologram piggyHologram) {
-        this.piggyBankEntity = piggyBankEntity;
-        this.pigLocation = pigLocation;
-        this.piggyHologram = piggyHologram;
-    }
-
-    public Pig getPiggyBankEntity() {
-        return piggyBankEntity;
-    }
-
-    public Hologram getPiggyHologram() {
-        return piggyHologram;
-    }
-
-    public Location getPigLocation() {
-        return pigLocation;
-    }
 }

@@ -1,5 +1,6 @@
 package pl.plajer.piggybanks;
 
+import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,41 +10,40 @@ import pl.plajer.piggybanks.utils.MetricsLite;
 import pl.plajer.piggybanks.utils.UpdateChecker;
 import pl.plajer.piggybanks.utils.Utils;
 
+import java.util.Arrays;
+
 public class Main extends JavaPlugin {
 
-    private static Main instance;
+    private boolean forceDisable = false;
     private final int MESSAGES_FILE_VERSION = 0;
     private final int CONFIG_FILE_VERSION = 1;
+    @Getter
     private FileManager fileManager;
+    @Getter
     private PiggyListeners piggyListeners;
+    @Getter
     private PiggyManager piggyManager;
-    private Economy econ = null;
-    private Boolean useProtocolLib;
-
-    public static Main getInstance() {
-        return instance;
-    }
+    @Getter
+    private Economy economy = null;
 
     @Override
     public void onEnable() {
-        if(getServer().getPluginManager().getPlugin("HolographicDisplays") == null) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Holographic Displays dependency not found!");
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Plugin is turning off...");
-            getServer().getPluginManager().disablePlugin(this);
+        for(String plugin : Arrays.asList("Vault", "HolographicDisplays")) {
+            if(isEnabled(plugin)) {
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] " + plugin + " dependency not found!");
+                Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Plugin is turning off...");
+                forceDisable = true;
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            }
         }
-        if(getServer().getPluginManager().getPlugin("Vault") == null) {
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Vault dependency not found!");
-            Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Plugin is turning off...");
-            getServer().getPluginManager().disablePlugin(this);
-        }
-        if(setupProtocolLib()) {
+        if(isEnabled("ProtocolLib")) {
             Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[PiggyBanks] Detected ProtocolLib plugin!");
             Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[PiggyBanks] Enabling private statistic holograms.");
         } else {
             Bukkit.getConsoleSender().sendMessage(ChatColor.GRAY + "[PiggyBanks] ProtocolLib plugin isn't installed!");
             Bukkit.getConsoleSender().sendMessage(ChatColor.GRAY + "[PiggyBanks] Disabling private statistic holograms.");
         }
-        instance = this;
         new Commands(this);
         new MenuHandler(this);
         fileManager = new FileManager(this);
@@ -81,61 +81,34 @@ public class Main extends JavaPlugin {
                 String latestVersion = UpdateChecker.getLatestVersion();
                 if(latestVersion != null) {
                     latestVersion = "v" + latestVersion;
-                    Bukkit.getConsoleSender().sendMessage(Utils.colorRawMessage("Other.Plugin-Up-To-Date").replaceAll("%old%", currentVersion).replaceAll("%new%", latestVersion));
+                    Bukkit.getConsoleSender().sendMessage(Utils.colorFileMessage("Other.Plugin-Up-To-Date").replaceAll("%old%", currentVersion).replaceAll("%new%", latestVersion));
                 }
             } catch(Exception ex) {
-                Bukkit.getConsoleSender().sendMessage(Utils.colorRawMessage("Other.Plugin-Update-Check-Failed"));
+                Bukkit.getConsoleSender().sendMessage(Utils.colorFileMessage("Other.Plugin-Update-Check-Failed"));
             }
         }
     }
 
     @Override
     public void onDisable() {
+        if(forceDisable) return;
         for(PiggyBank pgb : piggyManager.getLoadedPiggyBanks()) {
             pgb.getPiggyHologram().delete();
         }
         getPiggyManager().getLoadedPiggyBanks().clear();
     }
 
-    public FileManager getFileManager() {
-        return fileManager;
-    }
-
-    public PiggyListeners getPiggyListeners() {
-        return piggyListeners;
-    }
-
-    public PiggyManager getPiggyManager() {
-        return piggyManager;
-    }
-
-    public Economy getEconomy() {
-        return econ;
-    }
-
-    public Boolean getProtocolLibUse() {
-        return useProtocolLib;
+    public boolean isEnabled(String plugin){
+        return getServer().getPluginManager().getPlugin(plugin) != null;
     }
 
     private boolean setupEconomy() {
-        if(getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
+        if(!isEnabled("Vault")) return false;
         RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
         if(rsp == null) {
             return false;
         }
-        econ = rsp.getProvider();
-        return econ != null;
+        economy = rsp.getProvider();
+        return economy != null;
     }
-
-    private boolean setupProtocolLib() {
-        if(getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
-            useProtocolLib = false;
-            return false;
-        }
-        useProtocolLib = true;
-        return useProtocolLib != null;
-    }
-
 }

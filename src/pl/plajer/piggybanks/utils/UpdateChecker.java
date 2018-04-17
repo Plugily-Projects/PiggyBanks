@@ -18,8 +18,7 @@ public class UpdateChecker {
     }
 
     public static void checkUpdate(String currentVersion) {
-        //TODO change plugin version check
-        String version = getVersion(52634);
+        String version = getVersion();
         if(checkHigher(currentVersion, version))
             latestVersion = version;
     }
@@ -28,13 +27,13 @@ public class UpdateChecker {
         return latestVersion;
     }
 
-    private static String getVersion(int resourceId) {
+    private static String getVersion() {
         String version = null;
         try {
-            HttpURLConnection con = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + resourceId).openConnection();
+            HttpURLConnection con = (HttpURLConnection) new URL("https://api.spigotmc.org/legacy/update.php?resource=" + 52634).openConnection();
             con.setDoOutput(true);
             con.setRequestMethod("POST");
-            con.getOutputStream().write(("resource=" + resourceId).getBytes("UTF-8"));
+            con.getOutputStream().write(("resource=" + 52634).getBytes("UTF-8"));
             version = new BufferedReader(new InputStreamReader(con.getInputStream())).readLine();
         } catch(IOException ex) {
             ex.printStackTrace();
@@ -42,7 +41,7 @@ public class UpdateChecker {
         return version;
     }
 
-    public static String toReadable(String version) {
+    private static String toReadable(String version) {
         String[] split = Pattern.compile(".", Pattern.LITERAL).split(version.replace("v", ""));
         version = "";
         for(String s : split)
