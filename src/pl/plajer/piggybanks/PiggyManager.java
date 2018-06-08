@@ -47,7 +47,7 @@ public class PiggyManager {
     }
 
     public void loadPiggyBanks() {
-        List<String> piggies = plugin.getFileManager().getPiggyBanksConfig().getStringList("piggybanks");
+        List<String> piggies = ConfigurationManager.getConfig("piggybanks").getStringList("piggybanks");
         List<UUID> uuids = new ArrayList<>();
         if(piggies != null) {
             for(String s : piggies) {
@@ -71,7 +71,7 @@ public class PiggyManager {
                                         vm.showTo(player);
                                         vm.setVisibleByDefault(false);
                                         hologram.removeLine(0);
-                                        hologram.insertTextLine(0, Utils.colorFileMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", plugin.getFileManager().getUsersConfig().get("users." + player.getUniqueId()).toString()));
+                                        hologram.insertTextLine(0, Utils.colorFileMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", ConfigurationManager.getConfig("users").get("users." + player.getUniqueId()).toString()));
                                     }
                                 }
                             }.runTaskTimer(plugin, 10, 10);

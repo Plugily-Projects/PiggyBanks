@@ -26,6 +26,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pig;
@@ -89,10 +90,11 @@ public class Commands implements CommandExecutor {
                     pig.setBaby();
                 }
                 pig.setAgeLock(true);
-                List<String> list = plugin.getFileManager().getPiggyBanksConfig().getStringList("piggybanks");
+                List<String> list = ConfigurationManager.getConfig("piggybanks").getStringList("piggybanks");
                 list.add(pig.getUniqueId().toString());
-                plugin.getFileManager().getPiggyBanksConfig().set("piggybanks", list);
-                plugin.getFileManager().savePiggyBanksConfig();
+                FileConfiguration config = ConfigurationManager.getConfig("piggybanks");
+                config.set("piggybanks", list);
+                ConfigurationManager.saveConfig(config, "piggybanks");
                 Hologram hologram = HologramsAPI.createHologram(plugin, pig.getLocation().clone().add(0, 2.2, 0));
                 if(plugin.isEnabled("ProtocolLib")) {
                     new BukkitRunnable() {
@@ -105,7 +107,7 @@ public class Commands implements CommandExecutor {
                                 vm.showTo(player);
                                 vm.setVisibleByDefault(false);
                                 hologram.removeLine(0);
-                                hologram.insertTextLine(0, Utils.colorFileMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", plugin.getFileManager().getUsersConfig().get("users." + player.getUniqueId()).toString()));
+                                hologram.insertTextLine(0, Utils.colorFileMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", ConfigurationManager.getConfig("users").get("users." + player.getUniqueId()).toString()));
                             }
                         }
                     }.runTaskTimer(plugin, 10, 10);
@@ -132,14 +134,15 @@ public class Commands implements CommandExecutor {
                         sender.sendMessage(Utils.colorFileMessage("PiggyBank.Pig.Target-Invalid"));
                         return true;
                     }
-                    List<String> list = plugin.getFileManager().getPiggyBanksConfig().getStringList("piggybanks");
+                    List<String> list = ConfigurationManager.getConfig("piggybanks").getStringList("piggybanks");
                     if(!list.contains(target.getUniqueId().toString())) {
                         sender.sendMessage(Utils.colorFileMessage("PiggyBank.Pig.Target-Invalid"));
                         return true;
                     }
                     list.remove(target.getUniqueId().toString());
-                    plugin.getFileManager().getPiggyBanksConfig().set("piggybanks", list);
-                    plugin.getFileManager().savePiggyBanksConfig();
+                    FileConfiguration config = ConfigurationManager.getConfig("piggybanks");
+                    config.set("piggybanks", list);
+                    ConfigurationManager.saveConfig(config, "piggybanks");
                     for(PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
                         if(pgb.getPiggyBankEntity().equals(target)) {
                             pgb.getPiggyBankEntity().remove();

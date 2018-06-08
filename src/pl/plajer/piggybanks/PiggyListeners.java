@@ -22,6 +22,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Pig;
 import org.bukkit.entity.Player;
@@ -93,7 +94,7 @@ public class PiggyListeners implements Listener {
                     }
                     ItemStack balance = new ItemStack(Material.BOOK, 1);
                     ItemMeta balanceMeta = balance.getItemMeta();
-                    balanceMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(plugin.getFileManager().getUsersConfig().get("users." + e.getDamager().getUniqueId()))).replaceAll("null", "0"));
+                    balanceMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(ConfigurationManager.getConfig("users").get("users." + e.getDamager().getUniqueId()))).replaceAll("null", "0"));
                     balance.setItemMeta(balanceMeta);
                     piggyBank.setItem(4, balance);
                     for(int i = 0; i < 7; i++) {
@@ -133,8 +134,9 @@ public class PiggyListeners implements Listener {
                     if(plugin.getEconomy().getBalance(e.getPlayer()) >= money) {
                         plugin.getEconomy().withdrawPlayer(e.getPlayer(), money);
                         e.getRightClicked().getWorld().playEffect(e.getRightClicked().getLocation(), Effect.LAVA_POP, 1);
-                        plugin.getFileManager().getUsersConfig().set("users." + e.getPlayer().getUniqueId(), plugin.getFileManager().getUsersConfig().getInt("users." + e.getPlayer().getUniqueId()) + money);
-                        plugin.getFileManager().saveUsersConfig();
+                        FileConfiguration config = ConfigurationManager.getConfig("users");
+                        config.set("users." + e.getPlayer().getUniqueId(), config.getInt("users." + e.getPlayer().getUniqueId()) + money);
+                        ConfigurationManager.saveConfig(config, "users");
                         e.getPlayer().sendMessage(Utils.colorFileMessage("PiggyBank.Money-Deposited").replaceAll("%coins%", String.valueOf(money)));
                     } else {
                         e.getPlayer().sendMessage(Utils.colorFileMessage("PiggyBank.Money-No-Money-Balance"));
@@ -146,9 +148,10 @@ public class PiggyListeners implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-        if(!plugin.getFileManager().getUsersConfig().isSet("users." + e.getPlayer().getUniqueId())) {
-            plugin.getFileManager().getUsersConfig().set("users." + e.getPlayer().getUniqueId(), 0);
-            plugin.getFileManager().saveUsersConfig();
+        FileConfiguration config = ConfigurationManager.getConfig("users");
+        if(!config.isSet("users." + e.getPlayer().getUniqueId())) {
+            config.set("users." + e.getPlayer().getUniqueId(), 0);
+            ConfigurationManager.saveConfig(config, "users");
         }
         if(e.getPlayer().hasPermission("piggybabnks.admin.notify")) {
             String currentVersion = "v" + Bukkit.getPluginManager().getPlugin("PiggyBanks").getDescription().getVersion();

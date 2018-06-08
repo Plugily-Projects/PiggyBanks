@@ -21,6 +21,7 @@ package pl.plajer.piggybanks;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Pig;
 import org.bukkit.event.EventHandler;
@@ -68,7 +69,7 @@ public class MenuHandler implements Listener {
                         e.getWhoClicked().openInventory(e.getWhoClicked().getEnderChest());
                         return;
                     }
-                    if(plugin.getFileManager().getUsersConfig().getInt("users." + e.getWhoClicked().getUniqueId()) > 0) {
+                    if(ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId()) > 0) {
                         String clickedItem = e.getCurrentItem().getItemMeta().getDisplayName();
                         Integer number = null;
                         Pattern p = Pattern.compile("\\d+");
@@ -77,23 +78,24 @@ public class MenuHandler implements Listener {
                             number = Integer.valueOf(m.group());
                         }
                         if(number == null) {
-                            number = plugin.getFileManager().getUsersConfig().getInt("users." + e.getWhoClicked().getUniqueId());
+                            number = ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId());
                         }
-                        if(!(plugin.getFileManager().getUsersConfig().getInt("users." + e.getWhoClicked().getUniqueId()) >= number)) {
+                        if(!(ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId()) >= number)) {
                             e.getWhoClicked().sendMessage(Utils.colorFileMessage("PiggyBank.Money-Not-Enough-Money-In-Piggy"));
                             return;
                         }
                         piggyBank.getWorld().playEffect(piggyBank.getLocation().clone().add(0, 1, 0), Effect.HEART, 1);
                         plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(e.getWhoClicked().getUniqueId()), number);
-                        plugin.getFileManager().getUsersConfig().set("users." + e.getWhoClicked().getUniqueId(), plugin.getFileManager().getUsersConfig().getInt("users." + e.getWhoClicked().getUniqueId()) - number);
-                        plugin.getFileManager().saveUsersConfig();
+                        FileConfiguration config = ConfigurationManager.getConfig("users");
+                        config.set("users." + e.getWhoClicked().getUniqueId(), config.getInt("users." + e.getWhoClicked().getUniqueId()) - number);
+                        ConfigurationManager.saveConfig(config, "users");
                         e.getWhoClicked().sendMessage(Utils.colorFileMessage("PiggyBank.Money-Withdrawn").replaceAll("%coins%", String.valueOf(number)));
                         final Item item = piggyBank.getWorld().dropItemNaturally(piggyBank.getLocation().clone().add(0, 0.25, 0), new ItemStack(Material.GOLD_INGOT));
                         item.setPickupDelay(10000);
                         Bukkit.getScheduler().runTaskLater(plugin, item::remove, 25);
                         ItemStack balance = new ItemStack(Material.BOOK, 1);
                         ItemMeta balanceMeta = balance.getItemMeta();
-                        balanceMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(plugin.getFileManager().getUsersConfig().get("users." + e.getWhoClicked().getUniqueId()))).replaceAll("null", "0"));
+                        balanceMeta.setDisplayName(Utils.colorFileMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(ConfigurationManager.getConfig("users").get("users." + e.getWhoClicked().getUniqueId()))).replaceAll("null", "0"));
                         balance.setItemMeta(balanceMeta);
                         e.getInventory().setItem(4, balance);
                     } else {

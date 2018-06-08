@@ -22,6 +22,7 @@ import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import pl.plajer.piggybanks.utils.MetricsLite;
@@ -29,14 +30,14 @@ import pl.plajer.piggybanks.utils.UpdateChecker;
 import pl.plajer.piggybanks.utils.Utils;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Main extends JavaPlugin {
 
     private boolean forceDisable = false;
     private final int MESSAGES_FILE_VERSION = 0;
     private final int CONFIG_FILE_VERSION = 1;
-    @Getter
-    private FileManager fileManager;
+    private List<String> filesToGenerate = Arrays.asList("messages", "piggybanks", "users");
     @Getter
     private PiggyListeners piggyListeners;
     @Getter
@@ -62,30 +63,31 @@ public class Main extends JavaPlugin {
             Bukkit.getConsoleSender().sendMessage(ChatColor.GRAY + "[PiggyBanks] ProtocolLib plugin isn't installed!");
             Bukkit.getConsoleSender().sendMessage(ChatColor.GRAY + "[PiggyBanks] Disabling private statistic holograms.");
         }
+        saveDefaultConfig();
+        for(String file : filesToGenerate){
+            ConfigurationManager.getConfig(file);
+        }
+        new ConfigurationManager(this);
         new Commands(this);
         new MenuHandler(this);
-        fileManager = new FileManager(this);
         piggyListeners = new PiggyListeners(this);
         piggyManager = new PiggyManager(this);
         new MetricsLite(this);
-        saveDefaultConfig();
-        getFileManager().saveDefaultUsersFile();
-        getFileManager().saveDefaultPiggyBanksFile();
-        getFileManager().saveDefaultMessagesConfig();
         piggyManager.loadPiggyBanks();
         piggyManager.teleportScheduler();
         setupEconomy();
 
-        if(!fileManager.getMessagesConfig().isSet("File-Version-Do-Not-Edit") || !fileManager.getMessagesConfig().get("File-Version-Do-Not-Edit").equals(MESSAGES_FILE_VERSION)) {
+        if(!ConfigurationManager.getConfig("messages").isSet("File-Version-Do-Not-Edit") || !ConfigurationManager.getConfig("messages").get("File-Version-Do-Not-Edit").equals(MESSAGES_FILE_VERSION)) {
             getLogger().info("Your messages file is outdated! Updating...");
-            fileManager.updateConfig("messages.yml");
-            fileManager.getMessagesConfig().set("File-Version-Do-Not-Edit", MESSAGES_FILE_VERSION);
-            fileManager.saveMessagesConfig();
+            ConfigurationManager.updateConfig("messages");
+            FileConfiguration config = ConfigurationManager.getConfig("messages");
+            config.set("File-Version-Do-Not-Edit", MESSAGES_FILE_VERSION);
+            ConfigurationManager.saveConfig(config, "messages");
             getLogger().info("File successfully updated!");
         }
         if(!getConfig().isSet("File-Version-Do-Not-Edit") || !getConfig().get("File-Version-Do-Not-Edit").equals(CONFIG_FILE_VERSION)) {
             getLogger().info("Your config file is outdated! Updating...");
-            fileManager.updateConfig("config.yml");
+            ConfigurationManager.updateConfig("config");
             getConfig().set("File-Version-Do-Not-Edit", CONFIG_FILE_VERSION);
             saveConfig();
             getLogger().info("File successfully updated!");
