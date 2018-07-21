@@ -53,7 +53,7 @@ public class Main extends JavaPlugin {
   @Override
   public void onEnable() {
     for (String plugin : Arrays.asList("Vault", "HolographicDisplays")) {
-      if (getServer().getPluginManager().isPluginEnabled(plugin)) {
+      if (!getServer().getPluginManager().isPluginEnabled(plugin)) {
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] " + plugin + " dependency not found!");
         Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Plugin is turning off...");
         forceDisable = true;
@@ -69,10 +69,10 @@ public class Main extends JavaPlugin {
       Bukkit.getConsoleSender().sendMessage(ChatColor.GRAY + "[PiggyBanks] Disabling private statistic holograms.");
     }
     saveDefaultConfig();
+    new ConfigurationManager(this);
     for (String file : filesToGenerate) {
       ConfigurationManager.getConfig(file);
     }
-    new ConfigurationManager(this);
     LanguageMigrator.configUpdate();
     new Commands(this);
     new MenuHandler(this);

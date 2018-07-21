@@ -79,6 +79,9 @@ public class MenuHandler implements Listener {
             e.getWhoClicked().openInventory(e.getWhoClicked().getEnderChest());
             return;
           }
+          if(e.getCurrentItem().getType().equals(Material.BOOK)){
+            return;
+          }
           if (ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId()) > 0) {
             String clickedItem = e.getCurrentItem().getItemMeta().getDisplayName();
             Integer number = null;
