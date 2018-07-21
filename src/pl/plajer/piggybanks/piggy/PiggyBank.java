@@ -16,11 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package pl.plajer.piggybanks;
+package pl.plajer.piggybanks.piggy;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Pig;
 
@@ -28,8 +30,8 @@ import org.bukkit.entity.Pig;
 @AllArgsConstructor
 public class PiggyBank {
 
-    private Pig piggyBankEntity;
-    private Location pigLocation;
-    private Hologram piggyHologram;
+  private Pig piggyBankEntity;
+  private Location pigLocation;
+  private Hologram piggyHologram;
 
 }
