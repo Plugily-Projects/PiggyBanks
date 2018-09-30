@@ -19,20 +19,14 @@
 package pl.plajer.piggybanks.utils;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import pl.plajer.piggybanks.Main;
+import pl.plajerlair.core.services.exception.ReportedException;
+import pl.plajerlair.core.utils.MigratorUtils;
 
 /**
  * @author Plajer
@@ -45,42 +39,24 @@ public class LanguageMigrator {
   private static Main plugin = JavaPlugin.getPlugin(Main.class);
 
   public static void configUpdate() {
-    if (plugin.getConfig().getInt("File-Version-Do-Not-Edit") == CONFIG_FILE_VERSION) {
-      return;
-    }
-    Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[PiggyBanks] [System notify] Your config file is outdated! Updating...");
-    File file = new File(plugin.getDataFolder() + "/config.yml");
-
-    LanguageMigrator.removeLineFromFile(file, "File-Version-Do-Not-Edit: " + plugin.getConfig().getInt("File-Version-Do-Not-Edit"));
-
-    switch (plugin.getConfig().getInt("File-Version-Do-Not-Edit")) {
-      case 1:
-        LanguageMigrator.addNewLines(file, "# Item dropped when player withdraw money from piggy bank\r\ndrop-item: gold_ingot\r\nFile-Version-Do-Not-Edit: 2");
-        break;
-    }
-    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[PiggyBanks] [System notify] Config updated, no comments were removed :)");
-    Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[PiggyBanks] [System notify] You're using latest config file version! Nice!");
-  }
-
-  private static void removeLineFromFile(File file, String lineToRemove) {
     try {
-      List<String> lines = FileUtils.readLines(file);
-      List<String> updatedLines = lines.stream().filter(s -> !s.contains(lineToRemove)).collect(Collectors.toList());
-      FileUtils.writeLines(file, updatedLines, false);
-    } catch (IOException e) {
-      e.printStackTrace();
-      plugin.getLogger().warning("Something went horribly wrong with migration! Please contact author!");
-    }
-  }
+      if (plugin.getConfig().getInt("File-Version-Do-Not-Edit") == CONFIG_FILE_VERSION) {
+        return;
+      }
+      Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "[PiggyBanks] [System notify] Your config file is outdated! Updating...");
+      File file = new File(plugin.getDataFolder() + "/config.yml");
 
-  private static void addNewLines(File file, String newLines) {
-    try {
-      FileWriter fw = new FileWriter(file.getPath(), true);
-      fw.write(newLines);
-      fw.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-      plugin.getLogger().warning("Something went horribly wrong with migration! Please contact author!");
+      MigratorUtils.removeLineFromFile(file, "File-Version-Do-Not-Edit: " + plugin.getConfig().getInt("File-Version-Do-Not-Edit"));
+
+      switch (plugin.getConfig().getInt("File-Version-Do-Not-Edit")) {
+        case 1:
+          MigratorUtils.addNewLines(file, "# Item dropped when player withdraw money from piggy bank\r\ndrop-item: gold_ingot\r\nFile-Version-Do-Not-Edit: 2");
+          break;
+      }
+      Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[PiggyBanks] [System notify] Config updated, no comments were removed :)");
+      Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "[PiggyBanks] [System notify] You're using latest config file version! Nice!");
+    } catch (Exception ex) {
+      new ReportedException(plugin, ex);
     }
   }
 

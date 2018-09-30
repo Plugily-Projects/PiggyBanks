@@ -31,6 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BlockIterator;
 
 import pl.plajer.piggybanks.Main;
+import pl.plajerlair.core.utils.ConfigUtils;
 
 /**
  * @author Plajer
@@ -40,7 +41,7 @@ import pl.plajer.piggybanks.Main;
 public class Utils {
 
   public static String colorMessage(String message) {
-    return ChatColor.translateAlternateColorCodes('&', ConfigurationManager.getConfig("messages").getString(message));
+    return ChatColor.translateAlternateColorCodes('&', ConfigUtils.getConfig(JavaPlugin.getPlugin(Main.class), "messages").getString(message));
   }
 
   public static Entity getTargetEntity(Player p) {

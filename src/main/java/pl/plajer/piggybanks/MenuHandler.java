@@ -36,8 +36,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import pl.plajer.piggybanks.piggy.PiggyBank;
-import pl.plajer.piggybanks.utils.ConfigurationManager;
 import pl.plajer.piggybanks.utils.Utils;
+import pl.plajerlair.core.services.exception.ReportedException;
+import pl.plajerlair.core.utils.ConfigUtils;
 
 /**
  * @author Plajer
@@ -54,7 +55,7 @@ public class MenuHandler implements Listener {
     plugin.getServer().getPluginManager().registerEvents(this, plugin);
     try {
       dropItem = Material.valueOf(plugin.getConfig().getString("drop-item").toUpperCase());
-    } catch(Exception e){
+    } catch (Exception e) {
       Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "[PiggyBanks] Drop item is invalid, using default one...");
       //todo migrator
       dropItem = Material.GOLD_INGOT;
@@ -63,69 +64,78 @@ public class MenuHandler implements Listener {
 
   @EventHandler
   public void onMenuClick(InventoryClickEvent e) {
-    if (e.getInventory() == null || e.getCurrentItem() == null) {
-      return;
-    }
-    if (e.getInventory().getName().equals(Utils.colorMessage("PiggyBank.Menu.Title"))) {
-      e.setCancelled(true);
-      if (plugin.getPiggyListeners().getOpenedPiggies().get(e.getWhoClicked()) == null) {
-        e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Menu.Error-Occurred"));
+    try {
+      if (e.getInventory() == null || e.getCurrentItem() == null) {
         return;
       }
-      Pig piggyBank = plugin.getPiggyListeners().getOpenedPiggies().get(e.getWhoClicked());
-      for (PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
-        if (pgb.getPiggyBankEntity().equals(piggyBank)) {
-          if (e.getCurrentItem().getType().equals(Material.ENDER_CHEST)) {
-            e.getWhoClicked().openInventory(e.getWhoClicked().getEnderChest());
-            return;
-          }
-          if(e.getCurrentItem().getType().equals(Material.BOOK)){
-            return;
-          }
-          if (ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId()) > 0) {
-            String clickedItem = e.getCurrentItem().getItemMeta().getDisplayName();
-            Integer number = null;
-            Pattern p = Pattern.compile("\\d+");
-            Matcher m = p.matcher(clickedItem);
-            while (m.find()) {
-              number = Integer.valueOf(m.group());
-            }
-            if (number == null) {
-              number = ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId());
-            }
-            if (!(ConfigurationManager.getConfig("users").getInt("users." + e.getWhoClicked().getUniqueId()) >= number)) {
-              e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Money-Not-Enough-Money-In-Piggy"));
+      if (e.getInventory().getName().equals(Utils.colorMessage("PiggyBank.Menu.Title"))) {
+        e.setCancelled(true);
+        if (plugin.getPiggyListeners().getOpenedPiggies().get(e.getWhoClicked()) == null) {
+          e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Menu.Error-Occurred"));
+          return;
+        }
+        Pig piggyBank = plugin.getPiggyListeners().getOpenedPiggies().get(e.getWhoClicked());
+        for (PiggyBank pgb : plugin.getPiggyManager().getLoadedPiggyBanks()) {
+          if (pgb.getPiggyBankEntity().equals(piggyBank)) {
+            if (e.getCurrentItem().getType().equals(Material.ENDER_CHEST)) {
+              e.getWhoClicked().openInventory(e.getWhoClicked().getEnderChest());
               return;
             }
-            piggyBank.getWorld().spawnParticle(Particle.HEART, piggyBank.getLocation().clone().add(0, 1, 0), 1);
-            plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(e.getWhoClicked().getUniqueId()), number);
-            FileConfiguration config = ConfigurationManager.getConfig("users");
-            config.set("users." + e.getWhoClicked().getUniqueId(), config.getInt("users." + e.getWhoClicked().getUniqueId()) - number);
-            ConfigurationManager.saveConfig(config, "users");
-            e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Money-Withdrawn").replaceAll("%coins%", String.valueOf(number)));
-            final Item item = piggyBank.getWorld().dropItemNaturally(piggyBank.getLocation().clone().add(0, 0.25, 0), new ItemStack(dropItem));
-            item.setPickupDelay(10000);
-            Bukkit.getScheduler().runTaskLater(plugin, item::remove, 25);
-            ItemStack balance = new ItemStack(Material.BOOK, 1);
-            ItemMeta balanceMeta = balance.getItemMeta();
-            balanceMeta.setDisplayName(Utils.colorMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%", String.valueOf(ConfigurationManager.getConfig("users").get("users." + e.getWhoClicked().getUniqueId()))).replaceAll("null", "0"));
-            balance.setItemMeta(balanceMeta);
-            e.getInventory().setItem(4, balance);
-          } else {
-            e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Money-No-Money-In-Piggy"));
+            if (e.getCurrentItem().getType().equals(Material.BOOK)) {
+              return;
+            }
+            if (ConfigUtils.getConfig(plugin, "users").getInt("users." + e.getWhoClicked().getUniqueId()) > 0) {
+              String clickedItem = e.getCurrentItem().getItemMeta().getDisplayName();
+              Integer number = null;
+              Pattern p = Pattern.compile("\\d+");
+              Matcher m = p.matcher(clickedItem);
+              while (m.find()) {
+                number = Integer.valueOf(m.group());
+              }
+              if (number == null) {
+                number = ConfigUtils.getConfig(plugin, "users").getInt("users." + e.getWhoClicked().getUniqueId());
+              }
+              if (!(ConfigUtils.getConfig(plugin, "users").getInt("users." + e.getWhoClicked().getUniqueId()) >= number)) {
+                e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Money-Not-Enough-Money-In-Piggy"));
+                return;
+              }
+              piggyBank.getWorld().spawnParticle(Particle.HEART, piggyBank.getLocation().clone().add(0, 1, 0), 1);
+              plugin.getEconomy().depositPlayer(Bukkit.getOfflinePlayer(e.getWhoClicked().getUniqueId()), number);
+              FileConfiguration config = ConfigUtils.getConfig(plugin, "users");
+              config.set("users." + e.getWhoClicked().getUniqueId(), config.getInt("users." + e.getWhoClicked().getUniqueId()) - number);
+              ConfigUtils.saveConfig(plugin, config, "users");
+              e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Money-Withdrawn").replaceAll("%coins%", String.valueOf(number)));
+              final Item item = piggyBank.getWorld().dropItemNaturally(piggyBank.getLocation().clone().add(0, 0.25, 0), new ItemStack(dropItem));
+              item.setPickupDelay(10000);
+              Bukkit.getScheduler().runTaskLater(plugin, item::remove, 25);
+              ItemStack balance = new ItemStack(Material.BOOK, 1);
+              ItemMeta balanceMeta = balance.getItemMeta();
+              balanceMeta.setDisplayName(Utils.colorMessage("PiggyBank.Menu.Balance-Icon").replaceAll("%coins%",
+                  String.valueOf(ConfigUtils.getConfig(plugin, "users").get("users." + e.getWhoClicked().getUniqueId()))).replaceAll("null", "0"));
+              balance.setItemMeta(balanceMeta);
+              e.getInventory().setItem(4, balance);
+            } else {
+              e.getWhoClicked().sendMessage(Utils.colorMessage("PiggyBank.Money-No-Money-In-Piggy"));
+            }
           }
         }
       }
+    } catch (Exception ex) {
+      new ReportedException(plugin, ex);
     }
   }
 
   @EventHandler
   public void onMenuClose(InventoryCloseEvent e) {
-    if (e.getInventory() == null) {
-      return;
-    }
-    if (e.getInventory().getName().equals(Utils.colorMessage("PiggyBank.Menu.Title"))) {
-      plugin.getPiggyListeners().getOpenedPiggies().remove(e.getPlayer());
+    try {
+      if (e.getInventory() == null) {
+        return;
+      }
+      if (e.getInventory().getName().equals(Utils.colorMessage("PiggyBank.Menu.Title"))) {
+        plugin.getPiggyListeners().getOpenedPiggies().remove(e.getPlayer());
+      }
+    } catch (Exception ex) {
+      new ReportedException(plugin, ex);
     }
   }
 

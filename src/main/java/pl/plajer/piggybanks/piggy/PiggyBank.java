@@ -20,9 +20,6 @@ package pl.plajer.piggybanks.piggy;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Pig;
 

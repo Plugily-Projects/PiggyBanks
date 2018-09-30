@@ -26,9 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
@@ -37,8 +34,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import pl.plajer.piggybanks.Main;
-import pl.plajer.piggybanks.utils.ConfigurationManager;
 import pl.plajer.piggybanks.utils.Utils;
+import pl.plajerlair.core.utils.ConfigUtils;
 
 public class PiggyManager {
 
@@ -47,10 +44,12 @@ public class PiggyManager {
 
   public PiggyManager(Main plugin) {
     this.plugin = plugin;
+    loadPiggyBanks();
+    teleportScheduler();
   }
 
-  public void loadPiggyBanks() {
-    List<String> piggies = ConfigurationManager.getConfig("piggybanks").getStringList("piggybanks");
+  private void loadPiggyBanks() {
+    List<String> piggies = ConfigUtils.getConfig(plugin, "piggybanks").getStringList("piggybanks");
     List<UUID> uuids = new ArrayList<>();
     if (piggies != null) {
       for (String s : piggies) {
@@ -58,7 +57,9 @@ public class PiggyManager {
         uuids.add(u);
       }
     }
-    if (uuids.isEmpty()) return;
+    if (uuids.isEmpty()) {
+      return;
+    }
     for (World world : Bukkit.getServer().getWorlds()) {
       for (Entity entity : Bukkit.getServer().getWorld(world.getName()).getEntities()) {
         if (entity instanceof Pig) {
@@ -68,13 +69,16 @@ public class PiggyManager {
               new BukkitRunnable() {
                 @Override
                 public void run() {
-                  if (hologram.isDeleted()) this.cancel();
+                  if (hologram.isDeleted()) {
+                    this.cancel();
+                  }
                   VisibilityManager vm = hologram.getVisibilityManager();
                   for (Player player : Bukkit.getOnlinePlayers()) {
                     vm.showTo(player);
                     vm.setVisibleByDefault(false);
                     hologram.removeLine(0);
-                    hologram.insertTextLine(0, Utils.colorMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%", ConfigurationManager.getConfig("users").get("users." + player.getUniqueId()).toString()));
+                    hologram.insertTextLine(0, Utils.colorMessage("PiggyBank.Pig.Name-With-Counter").replaceAll("%money%",
+                        ConfigUtils.getConfig(plugin, "users").get("users." + player.getUniqueId()).toString()));
                   }
                 }
               }.runTaskTimer(plugin, 10, 10);
@@ -90,7 +94,7 @@ public class PiggyManager {
     }
   }
 
-  public void teleportScheduler() {
+  private void teleportScheduler() {
     Bukkit.getScheduler().runTaskTimer(plugin, () -> {
       for (PiggyBank pgb : loadedPiggyBanks) {
         pgb.getPiggyBankEntity().teleport(pgb.getPigLocation());
