@@ -1,5 +1,5 @@
 name: PiggyBanks
-version: 1.1.0
+version: ${project.version}
 author: Plajer
 main: pl.plajer.piggybanks.Main
 depend: [Vault, HolographicDisplays]
