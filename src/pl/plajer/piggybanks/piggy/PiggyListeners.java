@@ -54,7 +54,6 @@ public class PiggyListeners implements Listener {
 
   private List<Integer> piggyValues = Arrays.asList(1, 5, 10, 25, 50, 100, -1);
   private Main plugin;
-  @Getter
   private Map<Player, Pig> openedPiggies = new HashMap<>();
 
   public PiggyListeners(Main plugin) {
@@ -179,4 +178,7 @@ public class PiggyListeners implements Listener {
     openedPiggies.remove(e.getPlayer());
   }
 
+  public Map<Player, Pig> getOpenedPiggies() {
+    return openedPiggies;
+  }
 }

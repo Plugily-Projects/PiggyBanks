@@ -43,11 +43,8 @@ public class Main extends JavaPlugin {
 
   private boolean forceDisable = false;
   private List<String> filesToGenerate = Arrays.asList("messages", "piggybanks", "users");
-  @Getter
   private PiggyListeners piggyListeners;
-  @Getter
   private PiggyManager piggyManager;
-  @Getter
   private Economy economy = null;
 
   @Override
@@ -107,6 +104,18 @@ public class Main extends JavaPlugin {
       pgb.getPiggyHologram().delete();
     }
     getPiggyManager().getLoadedPiggyBanks().clear();
+  }
+
+  public PiggyListeners getPiggyListeners() {
+    return piggyListeners;
+  }
+
+  public PiggyManager getPiggyManager() {
+    return piggyManager;
+  }
+
+  public Economy getEconomy() {
+    return economy;
   }
 
   private void setupEconomy() {

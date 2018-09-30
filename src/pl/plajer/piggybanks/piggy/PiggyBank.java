@@ -26,12 +26,28 @@ import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.entity.Pig;
 
-@Getter
-@AllArgsConstructor
 public class PiggyBank {
 
   private Pig piggyBankEntity;
   private Location pigLocation;
   private Hologram piggyHologram;
+
+  public PiggyBank(Pig piggyBankEntity, Location pigLocation, Hologram piggyHologram) {
+    this.piggyBankEntity = piggyBankEntity;
+    this.pigLocation = pigLocation;
+    this.piggyHologram = piggyHologram;
+  }
+
+  public Pig getPiggyBankEntity() {
+    return piggyBankEntity;
+  }
+
+  public Location getPigLocation() {
+    return pigLocation;
+  }
+
+  public Hologram getPiggyHologram() {
+    return piggyHologram;
+  }
 
 }

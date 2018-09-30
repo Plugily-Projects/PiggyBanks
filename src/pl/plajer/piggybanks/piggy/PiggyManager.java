@@ -42,8 +42,6 @@ import pl.plajer.piggybanks.utils.Utils;
 
 public class PiggyManager {
 
-  @Getter
-  @Setter
   private List<PiggyBank> loadedPiggyBanks = new ArrayList<>();
   private Main plugin;
 
@@ -98,5 +96,13 @@ public class PiggyManager {
         pgb.getPiggyBankEntity().teleport(pgb.getPigLocation());
       }
     }, 20 * 3, 20 * 3);
+  }
+
+  public List<PiggyBank> getLoadedPiggyBanks() {
+    return loadedPiggyBanks;
+  }
+
+  public void setLoadedPiggyBanks(List<PiggyBank> loadedPiggyBanks) {
+    this.loadedPiggyBanks = loadedPiggyBanks;
   }
 }
